@@ -1,5 +1,5 @@
 /** Товар в заказе */
-interface Good {
+export interface Good {
   /** Тип цены */
   price_type: number | null;
   /** Цена товара */
@@ -25,7 +25,7 @@ interface Good {
 }
 
 /** Настройки автоповтора заказа */
-interface OrderSettings {
+export interface OrderSettings {
   /** Период повторяемости (minutes, hours, days, weeks, months) */
   repeatability_period: string;
   /** Значение периода повторяемости */
@@ -47,7 +47,7 @@ interface OrderSettings {
 }
 
 /** Заказ */
-interface Order {
+export interface Order {
   /** ID заказа */
   id: number;
   /** Номер заказа */
@@ -133,20 +133,42 @@ interface Order {
 }
 
 /** Ответ API со списком заказов */
-interface TDocsSales {
+export interface TDocsSales {
   /** Список заказов */
   result: Order[];
   /** Общее количество заказов */
   count: number;
 }
 
+/** Запрос на создание документа продажи */
+export interface CreateDocSaleRequest {
+  // TODO: Добавить поля для создания документа продажи
+  [key: string]: unknown;
+}
+
+const API_BASE = 'https://app.tablecrm.com';
 const token = import.meta.env.VITE_DOCS_SALES_TOKEN;
-export async function getDocsSales() {
-  const url = new URL('/api/v1/docs_sales', 'https://app.tablecrm.com');
+
+export async function getDocsSales(): Promise<TDocsSales> {
+  const url = new URL('/api/v1/docs_sales', API_BASE);
   url.searchParams.append('token', token);
   const response = await fetch(url.toString());
   if (!response.ok) {
     throw new Error(`Ошибка загрузки данных: ${response.status}`);
   }
   return (await response.json()) as TDocsSales;
+}
+
+export async function createDocSale(data: CreateDocSaleRequest): Promise<unknown> {
+  const url = new URL('/api/v1/docs_sales', API_BASE);
+  url.searchParams.append('token', token);
+  const response = await fetch(url.toString(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error(`Ошибка создания документа: ${response.status}`);
+  }
+  return await response.json();
 }

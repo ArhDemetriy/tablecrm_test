@@ -1,6 +1,7 @@
 import { Alert, Button, Spin } from 'antd';
 
 import { useCreateDocSale, useDocsSales } from '@/api/hooks';
+import mockGet from '@/api/mockGet.json';
 
 export function OrderCreateModal() {
   const { data, isLoading } = useDocsSales();
@@ -42,9 +43,9 @@ export function OrderCreateModal() {
         </Button>
       </div>
 
-      {data?.result?.length ? (
+      {(data ?? mockGet)?.result?.length ? (
         <div className="space-y-2">
-          {data.result.map(order => (
+          {(data ?? mockGet).result.map(order => (
             <div key={order.id} className="rounded border p-4">
               <div className="flex items-center justify-between">
                 <div>

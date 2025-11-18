@@ -133,7 +133,7 @@ interface Order {
 }
 
 /** Ответ API со списком заказов */
-interface TData {
+interface TDocsSales {
   /** Список заказов */
   result: Order[];
   /** Общее количество заказов */
@@ -141,6 +141,12 @@ interface TData {
 }
 
 const token = import.meta.env.VITE_DOCS_SALES_TOKEN;
-export async function getData() {
-  return {} as TData;
+export async function getDocsSales() {
+  const url = new URL('/api/v1/docs_sales', 'https://app.tablecrm.com');
+  url.searchParams.append('token', token);
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error(`Ошибка загрузки данных: ${response.status}`);
+  }
+  return (await response.json()) as TDocsSales;
 }

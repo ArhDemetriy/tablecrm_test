@@ -13,10 +13,16 @@
     "prettier-fix": "prettier -v && prettier --check ./src --write"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@tailwindcss/vite": "^4.1.17",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
     "antd": "^5.29.0",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.19",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

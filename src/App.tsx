@@ -8,7 +8,7 @@ export function App() {
 
   const showModal = () => {
     modal.info({
-      title: 'Проведение документа продажи',
+      title: 'Мобильная форма создания заказа',
       content: <OrderCreateModal />,
       width: 1360,
       centered: true,

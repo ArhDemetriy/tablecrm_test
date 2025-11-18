@@ -8,8 +8,17 @@ export function App() {
 
   const showModal = () => {
     modal.info({
-      title: 'Мобильная форма создания заказа',
+      title: 'Проведение документа продажи',
       content: <OrderCreateModal />,
+      width: 1360,
+      centered: true,
+      closable: true,
+      maskClosable: false,
+      styles: {
+        body: {
+          padding: '24px',
+        },
+      },
     });
   };
 
@@ -17,7 +26,7 @@ export function App() {
     <div className="flex min-h-screen items-center justify-center">
       {contextHolder}
       <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
-        Открыть модалку
+        Новая продажа
       </Button>
     </div>
   );

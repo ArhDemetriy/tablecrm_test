@@ -140,6 +140,7 @@ interface TData {
   count: number;
 }
 
+const token = import.meta.env.VITE_DOCS_SALES_TOKEN;
 export async function getData() {
   return {} as TData;
 }

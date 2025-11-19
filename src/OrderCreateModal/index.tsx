@@ -71,8 +71,7 @@ const getContragents = (orders: Order[]) =>
 
 export function OrderCreateModal() {
   const { data, isLoading } = useDocsSales();
-  // Извлечение данных из (data ?? mockGet).result
-  const orders = useMemo(() => (data ?? mockGet).result, [data]);
+  const orders = useMemo(() => (import.meta.env.DEV ? (data ?? mockGet) : data)?.result ?? [], [data]);
   const { allGoods, priceTypes, contragents, organizations, warehouses } = useMemo(() => {
     const allGoods = getAllGoods(orders);
     return {
@@ -163,20 +162,15 @@ export function OrderCreateModal() {
 
           <Form.Item name="phone" label="Телефон клиента">
             <AutoComplete
-              placeholder="Поиск по телефону"
-              value={
-                selectedContragent
-                  ? contragents.find(contragent => contragent.value === selectedContragent)?.label
-                  : undefined
-              }
-              options={contragents}
-              onSelect={(_, { value }) => {
-                if (!contragents.find(contragent => contragent.value === value)) return;
-                setSelectedContragent(value);
-                form.setFieldValue('contragent', value);
+              options={contragents.map(c => ({ value: c.phone ?? '', label: c.label, id: c.value }))}
+              onSelect={(_, { id }) => {
+                if (!contragents.find(c => c.value === id)) return;
+                setSelectedContragent(id);
+                form.setFieldValue('contragent', id);
               }}
+              placeholder="Поиск по телефону"
               filterOption={(inputValue, option) =>
-                option?.phone?.toLowerCase().includes(inputValue.toLowerCase()) ?? false
+                option?.label?.toLowerCase().includes(inputValue.toLowerCase()) ?? false
               }
             />
           </Form.Item>
@@ -278,9 +272,7 @@ export function OrderCreateModal() {
                     type="text"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => {
-                      setSelectedGoods(prev => prev.filter(g => g.nomenclature !== record.nomenclature));
-                    }}
+                    onClick={() => setSelectedGoods(prev => prev.filter(g => g.nomenclature !== record.nomenclature))}
                   />
                 ),
               },
@@ -340,13 +332,15 @@ export function OrderCreateModal() {
         goods={allGoods}
         onSelect={good => {
           setSelectedGoods(prev => {
-            const existing = prev.find(g => g.nomenclature === good.nomenclature);
-            if (existing) {
-              return prev.map(g =>
-                g.nomenclature === good.nomenclature ? { ...g, quantity: g.quantity + good.quantity } : g
-              );
-            }
-            return [...prev, good];
+            const { nomenclature } = good;
+            let goodIsSelected = false;
+            const next = prev.map(g => {
+              if (g.nomenclature !== nomenclature) return g;
+              goodIsSelected = true;
+              return { ...g, quantity: g.quantity + good.quantity };
+            });
+            if (!goodIsSelected) next.push(good);
+            return next;
           });
           setIsGoodsModalOpen(false);
         }}
@@ -356,37 +350,38 @@ export function OrderCreateModal() {
 }
 
 // Компонент модалки выбора товаров
-interface GoodsSelectionModalProps {
+function GoodsSelectionModal({
+  open,
+  onCancel,
+  goods,
+  onSelect,
+}: {
   open: boolean;
   onCancel: () => void;
   goods: Good[];
   onSelect: (good: Good & { quantity: number }) => void;
-}
-
-function GoodsSelectionModal({ open, onCancel, goods, onSelect }: GoodsSelectionModalProps) {
+}) {
   const [search, setSearch] = useState('');
   const [selectedGood, setSelectedGood] = useState<Good | null>(null);
   const [quantity, setQuantity] = useState(1);
 
-  const filteredGoods = useMemo(() => {
-    return goods.filter(good => good.nomenclature_name.toLowerCase().includes(search.toLowerCase()));
-  }, [goods, search]);
-
-  const handleAdd = () => {
-    if (selectedGood) {
-      onSelect({ ...selectedGood, quantity });
-      setSelectedGood(null);
-      setQuantity(1);
-      setSearch('');
-    }
-  };
+  const filteredGoods = useMemo(
+    () => goods.filter(good => good.nomenclature_name.toLowerCase().includes(search.toLowerCase())),
+    [goods, search]
+  );
 
   return (
     <Modal
       title="Выбор товара"
       open={open}
       onCancel={onCancel}
-      onOk={handleAdd}
+      onOk={() => {
+        if (!selectedGood) return;
+        onSelect({ ...selectedGood, quantity });
+        setSelectedGood(null);
+        setQuantity(1);
+        setSearch('');
+      }}
       okText="Добавить"
       cancelText="Отмена"
       okButtonProps={{ disabled: !selectedGood }}

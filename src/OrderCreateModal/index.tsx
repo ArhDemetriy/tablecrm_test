@@ -201,13 +201,17 @@ export function OrderCreateModal() {
             <Select placeholder="Выберите тип цены" options={priceTypes} allowClear />
           </Form.Item>
 
-          <Button icon={<SettingOutlined />} block>
-            Доп. параметры
-          </Button>
+          <Form.Item>
+            <Button icon={<SettingOutlined />} block>
+              Доп. параметры
+            </Button>
+          </Form.Item>
 
-          <Button icon={<TruckOutlined />} block>
-            Доставка
-          </Button>
+          <Form.Item>
+            <Button icon={<TruckOutlined />} block>
+              Доставка
+            </Button>
+          </Form.Item>
         </div>
 
         {/* Центральная панель - Товары */}
@@ -315,13 +319,17 @@ export function OrderCreateModal() {
             <InputNumber min={0} className="w-full" />
           </Form.Item>
 
-          <Button type="primary" block loading={isCreating} onClick={() => handleSubmit(true)}>
-            Создать и провести
-          </Button>
+          <Form.Item>
+            <Button type="primary" block loading={isCreating} onClick={() => handleSubmit(true)} className="">
+              Создать и провести
+            </Button>
+          </Form.Item>
 
-          <Button block loading={isCreating} onClick={() => handleSubmit(false)}>
-            Только создать
-          </Button>
+          <Form.Item>
+            <Button block loading={isCreating} onClick={() => handleSubmit(false)}>
+              Только создать
+            </Button>
+          </Form.Item>
         </div>
       </div>
 

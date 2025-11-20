@@ -1,0 +1,10 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export type TagCreate = {
+  name: string;
+  color?: string;
+  emoji?: string;
+  description?: string;
+};

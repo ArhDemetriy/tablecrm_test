@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "generate:api": "bunx openapi-typescript-codegen --input src/api/openapi.json --output src/api/generated --client fetch --useOptions --useUnionTypes",
     "lint": "eslint .",
     "preview": "vite preview",
     "tsc": "tsc --version && tsc -b",
@@ -40,6 +41,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "openapi-typescript-codegen": "^0.29.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.17",

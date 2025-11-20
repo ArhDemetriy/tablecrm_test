@@ -2,7 +2,10 @@ import { AutoComplete, Button, Empty, Form, Input, InputNumber, Modal, Select, S
 import { useMemo, useState } from 'react';
 import { z } from 'zod';
 
-import type { Good, Order } from '@/api/docsSales';
+import type {
+  api__docs_sales__schemas__Item as Good,
+  api__docs_sales__schemas__ViewInList as Order,
+} from '@/api/generated';
 import { useCreateDocSale, useDocsSales } from '@/api/hooks';
 import mockGet from '@/api/mockGet.json';
 import { DeleteOutlined, SearchOutlined, SettingOutlined, TruckOutlined } from '@ant-design/icons';
@@ -38,7 +41,14 @@ const getUniqueWarehouses = (orders: Order[]) =>
   }));
 
 const getAllGoods = (orders: Order[]) =>
-  Array.from(new Map(orders.flatMap(order => order.goods).map(good => [good.nomenclature, good])).values());
+  Array.from(
+    new Map(
+      orders
+        .flatMap(order => order.goods ?? [])
+        .filter((good): good is Good => good !== undefined)
+        .map(good => [good.nomenclature, good])
+    ).values()
+  );
 
 const getUniquePriceTypesFromGoods = (goods: Good[]) =>
   Array.from(new Set(goods.map(good => good.price_type!).filter(Boolean)), value => ({
@@ -71,7 +81,13 @@ const getContragents = (orders: Order[]) =>
 
 export function OrderCreateModal() {
   const { data, isLoading } = useDocsSales();
-  const orders = useMemo(() => (import.meta.env.DEV ? (data ?? mockGet) : data)?.result ?? [], [data]);
+  const orders = useMemo(
+    () =>
+      (import.meta.env.DEV ? (data ?? (mockGet as unknown as typeof data)) : data)?.result?.filter(
+        (order): order is Order => order !== undefined
+      ) ?? [],
+    [data]
+  );
   const { allGoods, priceTypes, contragents, organizations, warehouses } = useMemo(() => {
     const allGoods = getAllGoods(orders);
     return {
@@ -123,7 +139,7 @@ export function OrderCreateModal() {
         conducted,
       }))
       .then(formData =>
-        createDocSale(formData, {
+        createDocSale([formData], {
           onSuccess: () => {
             message.success(conducted ? 'Документ создан и проведен' : 'Документ создан');
             form.resetFields();
@@ -374,7 +390,7 @@ function GoodsSelectionModal({
   const [quantity, setQuantity] = useState(1);
 
   const filteredGoods = useMemo(
-    () => goods.filter(good => good.nomenclature_name.toLowerCase().includes(search.toLowerCase())),
+    () => goods.filter(good => good.nomenclature_name?.toLowerCase().includes(search.toLowerCase()) ?? false),
     [goods, search]
   );
 

@@ -86,4 +86,3 @@ export function useNomenclature(token: string) {
     enabled: !!token,
   });
 }
-

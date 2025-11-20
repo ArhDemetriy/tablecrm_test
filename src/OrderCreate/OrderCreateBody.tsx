@@ -1,4 +1,3 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Input, InputNumber, Modal, Select, Table, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -12,6 +11,7 @@ import {
   usePriceTypes,
   useWarehouses,
 } from '@/api/hooks';
+import { DeleteOutlined } from '@ant-design/icons';
 
 type SelectedProduct = NomenclatureGet & { quantity: number; selectedPrice: number };
 
@@ -162,174 +162,152 @@ export function OrderCreateBody() {
     );
   };
 
-  // Если токен не введён - показываем форму токена
-  if (!token) {
-    return (
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Токен кассы</label>
-          <Input
-            placeholder="Введите токен"
-            value={tokenInput}
-            onChange={e => setTokenInput(e.target.value)}
-            onPressEnter={handleTokenSubmit}
-          />
-        </div>
-        <Button type="primary" block onClick={handleTokenSubmit} className="bg-blue-500 hover:bg-blue-600">
-          Продолжить
-        </Button>
-      </div>
-    );
-  }
-
-  // Основная форма
   return (
-    <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-md">
-        {/* Токен кассы */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Токен кассы</label>
-          <Input
-            placeholder="Введите токен"
-            value={tokenInput}
-            onChange={e => setTokenInput(e.target.value)}
-            onBlur={() => {
-              if (tokenInput !== token && tokenInput.trim()) {
-                setToken(tokenInput);
-              }
-            }}
-          />
-        </div>
+    <div className="flex w-full max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow-md">
+      <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+        Токен кассы
+        <Input
+          placeholder="Введите токен"
+          value={tokenInput}
+          onChange={e => setTokenInput(e.target.value)}
+          onPressEnter={handleTokenSubmit}
+        />
+      </label>
 
-        {/* Контрагент */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+      <Button type="primary" block onClick={handleTokenSubmit} className="bg-blue-500 hover:bg-blue-600">
+        Продолжить
+      </Button>
+      {token && (
+        <>
+          {/* Контрагент */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
             Контрагент (поиск по телефону)
-          </label>
-          <div className="flex gap-2">
-            <AutoComplete
-              className="flex-1"
-              placeholder="Телефон клиента"
-              value={contragentPhone}
-              onChange={handleContragentChange}
-              options={contragents.map((c: Contragent) => ({
-                value: c.phone ?? '',
-                label: `${c.name ?? ''} - ${c.phone ?? ''}`,
-              }))}
-              filterOption={(inputValue, option) =>
-                String(option?.label ?? '').toLowerCase().includes(inputValue.toLowerCase())
-              }
-            />
-            <Button onClick={handleSearchContragent}>Найти</Button>
-          </div>
-        </div>
-
-        {/* Счёт поступления */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Счёт поступления</label>
-          <Select
-            className="w-full"
-            placeholder="Выберите..."
-            value={selectedPaybox}
-            onChange={setSelectedPaybox}
-            allowClear
-            options={payboxes.map(p => ({ value: p.id, label: p.name }))}
-          />
-        </div>
-
-        {/* Склад отгрузки */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Склад отгрузки</label>
-          <Select
-            className="w-full"
-            placeholder="Выберите..."
-            value={selectedWarehouse}
-            onChange={setSelectedWarehouse}
-            allowClear
-            options={warehouses.map(w => ({ value: w.id, label: w.name }))}
-          />
-        </div>
-
-        {/* Организация */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Организация</label>
-          <Select
-            className="w-full"
-            placeholder="Выберите..."
-            value={selectedOrganization}
-            onChange={setSelectedOrganization}
-            allowClear
-            options={organizations.map(o => ({ value: o.id, label: o.short_name }))}
-          />
-        </div>
-
-        {/* Тип цены */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Тип цены</label>
-          <Select
-            className="w-full"
-            placeholder="Выберите..."
-            value={selectedPriceType}
-            onChange={setSelectedPriceType}
-            allowClear
-            options={priceTypes.map(pt => ({ value: pt.id, label: pt.name }))}
-          />
-        </div>
-
-        {/* Поиск товара */}
-        <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Поиск товара</label>
-          <div className="flex gap-2">
-            <Input
-              className="flex-1"
-              placeholder="Введите название"
-              value={productSearch}
-              onChange={e => setProductSearch(e.target.value)}
-            />
-            <Button onClick={handleOpenProductModal}>Добавить</Button>
-          </div>
-        </div>
-
-        {/* Список добавленных товаров */}
-        <div className="mb-4 max-h-64 overflow-y-auto rounded border border-gray-200">
-          {selectedProducts.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">Товары не добавлены</div>
-          ) : (
-            <div className="divide-y">
-              {selectedProducts.map(product => (
-                <div key={product.id} className="flex items-center justify-between p-3">
-                  <div className="flex-1">
-                    <div className="font-medium">{product.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {product.quantity} {product.unit_name} × {product.selectedPrice} ₽ ={' '}
-                      {(product.quantity * product.selectedPrice).toFixed(2)} ₽
-                    </div>
-                  </div>
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => setSelectedProducts(prev => prev.filter(p => p.id !== product.id))}
-                  />
-                </div>
-              ))}
+            <div className="flex gap-2">
+              <AutoComplete
+                className="flex-1"
+                placeholder="Телефон клиента"
+                value={contragentPhone}
+                onChange={handleContragentChange}
+                options={contragents.map((c: Contragent) => ({
+                  value: c.phone ?? '',
+                  label: `${c.name ?? ''} - ${c.phone ?? ''}`,
+                }))}
+                filterOption={(inputValue, option) =>
+                  String(option?.label ?? '')
+                    .toLowerCase()
+                    .includes(inputValue.toLowerCase())
+                }
+              />
+              <Button onClick={handleSearchContragent}>Найти</Button>
             </div>
-          )}
-        </div>
+          </label>
 
-        {/* Итоги */}
-        <div className="mb-4 rounded bg-gray-50 p-4">
-          <div className="mb-2 flex justify-between">
-            <span className="font-medium">Итого товаров:</span>
-            <span>{totalItems}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Сумма:</span>
-            <span className="text-lg font-bold">{totalSum.toFixed(2)} ₽</span>
-          </div>
-        </div>
+          {/* Счёт поступления */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Счёт поступления
+            <Select
+              className="w-full"
+              placeholder="Выберите..."
+              value={selectedPaybox}
+              onChange={setSelectedPaybox}
+              allowClear
+              options={payboxes.map(p => ({ value: p.id, label: p.name }))}
+            />
+          </label>
 
-        {/* Кнопки действий */}
-        <div className="space-y-3">
+          {/* Склад отгрузки */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Склад отгрузки
+            <Select
+              className="w-full"
+              placeholder="Выберите..."
+              value={selectedWarehouse}
+              onChange={setSelectedWarehouse}
+              allowClear
+              options={warehouses.map(w => ({ value: w.id, label: w.name }))}
+            />
+          </label>
+
+          {/* Организация */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Организация
+            <Select
+              className="w-full"
+              placeholder="Выберите..."
+              value={selectedOrganization}
+              onChange={setSelectedOrganization}
+              allowClear
+              options={organizations.map(o => ({ value: o.id, label: o.short_name }))}
+            />
+          </label>
+
+          {/* Тип цены */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Тип цены
+            <Select
+              className="w-full"
+              placeholder="Выберите..."
+              value={selectedPriceType}
+              onChange={setSelectedPriceType}
+              allowClear
+              options={priceTypes.map(pt => ({ value: pt.id, label: pt.name }))}
+            />
+          </label>
+
+          {/* Поиск товара */}
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Поиск товара
+            <div className="flex gap-2">
+              <Input
+                className="flex-1"
+                placeholder="Введите название"
+                value={productSearch}
+                onChange={e => setProductSearch(e.target.value)}
+              />
+              <Button onClick={handleOpenProductModal}>Добавить</Button>
+            </div>
+          </label>
+
+          {/* Список добавленных товаров */}
+          <div className="max-h-64 overflow-y-auto rounded border border-gray-200">
+            {selectedProducts.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">Товары не добавлены</div>
+            ) : (
+              <div className="divide-y">
+                {selectedProducts.map(product => (
+                  <div key={product.id} className="flex items-center justify-between p-3">
+                    <div className="flex-1">
+                      <div className="font-medium">{product.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {product.quantity} {product.unit_name} × {product.selectedPrice} ₽ ={' '}
+                        {(product.quantity * product.selectedPrice).toFixed(2)} ₽
+                      </div>
+                    </div>
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => setSelectedProducts(prev => prev.filter(p => p.id !== product.id))}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Итоги */}
+          <div className="rounded bg-gray-50 p-4">
+            <div className="mb-2 flex justify-between">
+              <span className="font-medium">Итого товаров:</span>
+              <span>{totalItems}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Сумма:</span>
+              <span className="text-lg font-bold">{totalSum.toFixed(2)} ₽</span>
+            </div>
+          </div>
+
+          {/* Кнопки действий */}
           <Button
             type="primary"
             block
@@ -342,29 +320,28 @@ export function OrderCreateBody() {
           <Button block loading={isCreating} onClick={() => handleSubmit(false)}>
             Создать и провести
           </Button>
-        </div>
 
-        {/* Модалка выбора товаров */}
-        <ProductSelectionModal
-        open={isProductModalOpen}
-        onCancel={() => setIsProductModalOpen(false)}
-        products={nomenclature}
-        selectedPriceType={selectedPriceType}
-        initialSearch={productSearch}
-        onSelect={product => {
-          setSelectedProducts(prev => {
-            const existing = prev.find(p => p.id === product.id);
-            if (existing) {
-              return prev.map(p =>
-                p.id === product.id ? { ...p, quantity: p.quantity + product.quantity } : p
-              );
-            }
-            return [...prev, product];
-          });
-          setIsProductModalOpen(false);
-        }}
-      />
-      </div>
+          {/* Модалка выбора товаров */}
+          <ProductSelectionModal
+            open={isProductModalOpen}
+            onCancel={() => setIsProductModalOpen(false)}
+            products={nomenclature}
+            selectedPriceType={selectedPriceType}
+            initialSearch={productSearch}
+            onSelect={product => {
+              setSelectedProducts(prev => {
+                const existing = prev.find(p => p.id === product.id);
+                if (existing) {
+                  return prev.map(p => (p.id === product.id ? { ...p, quantity: p.quantity + product.quantity } : p));
+                }
+                return [...prev, product];
+              });
+              setIsProductModalOpen(false);
+            }}
+          />
+        </>
+      )}
+    </div>
   );
 }
 
@@ -444,11 +421,7 @@ function ProductSelectionModal({
       okButtonProps={{ disabled: !selectedProduct }}
     >
       <div className="space-y-4">
-        <Input
-          placeholder="Поиск по названию"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+        <Input placeholder="Поиск по названию" value={search} onChange={e => setSearch(e.target.value)} />
 
         <Table
           dataSource={filteredProducts}
@@ -490,8 +463,8 @@ function ProductSelectionModal({
               <p className="text-sm text-gray-500">
                 Цена:{' '}
                 {selectedPriceType
-                  ? selectedProduct.prices?.find(p => String(p.price_type) === String(selectedPriceType))?.price ?? 0
-                  : selectedProduct.prices?.[0]?.price ?? 0}{' '}
+                  ? (selectedProduct.prices?.find(p => String(p.price_type) === String(selectedPriceType))?.price ?? 0)
+                  : (selectedProduct.prices?.[0]?.price ?? 0)}{' '}
                 ₽
               </p>
             </div>

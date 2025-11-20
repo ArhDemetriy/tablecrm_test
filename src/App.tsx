@@ -1,6 +1,7 @@
 import { Button, Modal } from 'antd';
 
 import { OldOrderCreateModal } from '@/OldOrderCreateModal';
+import { OrderCreate } from '@/OrderCreate';
 import { PlusOutlined } from '@ant-design/icons';
 
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
+      <OrderCreate />
       {contextHolder}
       <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
         Новая продажа

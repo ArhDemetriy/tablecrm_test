@@ -165,29 +165,26 @@ export function OrderCreateBody() {
   // Если токен не введён - показываем форму токена
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
-          <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-gray-700">Токен кассы</label>
-            <Input
-              placeholder="Введите токен"
-              value={tokenInput}
-              onChange={e => setTokenInput(e.target.value)}
-              onPressEnter={handleTokenSubmit}
-            />
-          </div>
-          <Button type="primary" block onClick={handleTokenSubmit} className="bg-blue-500 hover:bg-blue-600">
-            Продолжить
-          </Button>
+      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
+        <div className="mb-4">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Токен кассы</label>
+          <Input
+            placeholder="Введите токен"
+            value={tokenInput}
+            onChange={e => setTokenInput(e.target.value)}
+            onPressEnter={handleTokenSubmit}
+          />
         </div>
+        <Button type="primary" block onClick={handleTokenSubmit} className="bg-blue-500 hover:bg-blue-600">
+          Продолжить
+        </Button>
       </div>
     );
   }
 
   // Основная форма
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md">
+    <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-md">
         {/* Токен кассы */}
         <div className="mb-4">
           <label className="mb-2 block text-sm font-medium text-gray-700">Токен кассы</label>
@@ -346,10 +343,9 @@ export function OrderCreateBody() {
             Создать и провести
           </Button>
         </div>
-      </div>
 
-      {/* Модалка выбора товаров */}
-      <ProductSelectionModal
+        {/* Модалка выбора товаров */}
+        <ProductSelectionModal
         open={isProductModalOpen}
         onCancel={() => setIsProductModalOpen(false)}
         products={nomenclature}
@@ -368,7 +364,7 @@ export function OrderCreateBody() {
           setIsProductModalOpen(false);
         }}
       />
-    </div>
+      </div>
   );
 }
 

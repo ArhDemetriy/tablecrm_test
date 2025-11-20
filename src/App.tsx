@@ -23,7 +23,7 @@ export function App() {
   // };
 
   return (
-    <div className="flex min-h-screen w-full items-start justify-center bg-[#f5f5f8] p-4">
+    <div className="flex h-screen w-full items-start justify-center overflow-y-auto bg-[#f5f5f8] p-4">
       <OrderCreate />
       {/* {contextHolder}
       <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>

@@ -163,7 +163,7 @@ export function OrderCreateBody() {
   };
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow-md">
+    <div className="flex w-full max-w-[420px] flex-col gap-4 rounded-lg bg-white p-6 shadow-md">
       <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
         Токен кассы
         <Input

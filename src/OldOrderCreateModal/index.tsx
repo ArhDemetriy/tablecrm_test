@@ -79,7 +79,7 @@ const getContragents = (orders: Order[]) =>
     })
   );
 
-export function OrderCreateModal() {
+export function OldOrderCreateModal() {
   const { data, isLoading } = useDocsSales();
   const orders = useMemo(
     () =>

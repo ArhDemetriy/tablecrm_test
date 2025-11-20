@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd';
 
-import { OrderCreateModal } from '@/OrderCreateModal';
+import { OldOrderCreateModal } from '@/OldOrderCreateModal';
 import { PlusOutlined } from '@ant-design/icons';
 
 export function App() {
@@ -9,7 +9,7 @@ export function App() {
   const showModal = () => {
     modal.info({
       title: 'Мобильная форма создания заказа',
-      content: <OrderCreateModal />,
+      content: <OldOrderCreateModal />,
       width: 1360,
       centered: true,
       closable: true,
